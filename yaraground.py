@@ -9,7 +9,7 @@
 ## Whole Table cells Copy and Paste ======> Done
 ## Export table to Excel (csv) ======> Done
 ## Add tag option code
-## Log File
+## Log File - working
 ## Key Event Handling : Hotkey
 ## PyInstaller
 
