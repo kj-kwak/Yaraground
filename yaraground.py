@@ -8,7 +8,8 @@
 ## Configuration ======> Done
 ## Whole Table cells Copy and Paste ======> Done
 ## Export table to Excel (csv) ======> Done
-## Add tag option code
+## Add yararule tag option code
+## Add yararule -s option result
 ## Log File - working
 ## Key Event Handling : Hotkey
 ## PyInstaller
