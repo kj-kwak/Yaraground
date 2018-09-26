@@ -408,7 +408,7 @@ class Ui_yaraground(object):
 
         if self.recursiveCheckBox.isChecked() == True:
             recur_option = "-r"       
-        command = "yara %s %s %s > %s" % (self.yararulePath.text(), targetdir, recur_option, resultfile)
+        command = "yara \"%s\" \"%s\" %s > %s" % (self.yararulePath.text(), targetdir, recur_option, resultfile)
         print (command)
         os.system(command)
 
