@@ -407,11 +407,22 @@ class Ui_yaraground(object):
         recur_option = ""
 
         if self.recursiveCheckBox.isChecked() == True:
-            recur_option = "-r"       
-        command = "yara \"%s\" \"%s\" %s > %s" % (self.yararulePath.text(), targetdir, recur_option, resultfile)
-        print (command)
-        os.system(command)
+            recur_option = "-r"    
 
+        if os.name == 'nt':
+            if os.path.isfile("C:/windows/sysnative/yara64.exe"):
+                command = "C:/windows/sysnative/yara64.exe \"{}\" \"{}\" {} > {}".format(self.yararulePath.text(), targetdir, recur_option, resultfile)
+            elif os.path.isfile("C:/windows/sysnative/yara32.exe"):
+                command = "C:/windows/sysnative/yara32.exe \"{}\" \"{}\" {} > {}".format(self.yararulePath.text(), targetdir, recur_option, resultfile)
+            elif os.path.isfile("C:/windows/sysnative/yara.exe"):
+                command = "C:/windows/sysnative/yara.exe \"{}\" \"{}\" {} > {}".format(self.yararulePath.text(), targetdir, recur_option, resultfile)
+            else:
+                print("[*] The yara file does not exist in the system32 path.")
+        else:
+            command = "yara \"{}\" \"{}\" {} > {}".format(self.yararulePath.text(), targetdir, recur_option, resultfile)
+        
+        os.system(command)
+        print (command)
         content = open(resultfile, 'r')
         #os.remove(resultfile)
 
