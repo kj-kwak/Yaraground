@@ -359,7 +359,7 @@ class Ui_yaraground(object):
             rowlen = self.tableWidget.rowCount()
             collen = self.tableWidget.columnCount()
 
-            with open(filename, "w") as csvfile:
+            with open(filename, "w", newline='') as csvfile:
                 fieldnames = ['Rulename', 'Filename']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
