@@ -17,6 +17,7 @@
 import os
 import io
 import csv
+import yara
 try:
     from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 except:
@@ -396,40 +397,43 @@ class Ui_yaraground(object):
             self.dirPathEditor.setText(dirname)
         except:
             return
-        
-    def string_replace(self, content, targetdir):
-        return content.replace(targetdir, "")
 
     def scan(self):
         self.tableWidget.setRowCount(0)
-        resultfile = "result.txt"
+        content = []
         targetdir = self.dirPathEditor.text()
-        recur_option = ""
+        rules = yara.compile(filepath=self.yararulePath.text())
 
-        if self.recursiveCheckBox.isChecked() == True:
-            recur_option = "-r"    
+        if self.recursiveCheckBox.isChecked():
+            for (path, dir, filenames) in os.walk(targetdir):
+                for filename in filenames:
+                    try:
+                        f = open(path + "/" + filename, "rb")
+                        matches = rules.match(data=f.read())
+                        f.close()
 
-        if os.name == 'nt':
-            if os.path.isfile("C:/windows/sysnative/yara64.exe"):
-                command = "C:/windows/sysnative/yara64.exe \"{}\" \"{}\" {} > {}".format(self.yararulePath.text(), targetdir, recur_option, resultfile)
-            elif os.path.isfile("C:/windows/sysnative/yara32.exe"):
-                command = "C:/windows/sysnative/yara32.exe \"{}\" \"{}\" {} > {}".format(self.yararulePath.text(), targetdir, recur_option, resultfile)
-            elif os.path.isfile("C:/windows/sysnative/yara.exe"):
-                command = "C:/windows/sysnative/yara.exe \"{}\" \"{}\" {} > {}".format(self.yararulePath.text(), targetdir, recur_option, resultfile)
-            else:
-                print("[*] The yara file does not exist in the system32 path.")
+                        if matches:
+                            rulenames = [match.rule for match in matches]
+                            for rulename in rulenames:
+                                content.append([rulename, filename])
+                    except IOError:
+                        continue
         else:
-            command = "yara \"{}\" \"{}\" {} > {}".format(self.yararulePath.text(), targetdir, recur_option, resultfile)
-        
-        os.system(command)
-        print (command)
-        content = open(resultfile, 'r')
-        #os.remove(resultfile)
+            filenames = os.listdir(targetdir)
+            for filename in filenames:
+                try:
+                    f = open(targetdir + "/" + filename, "rb")
+                    matches = rules.match(data=f.read())
+                    f.close()
 
-        for item in content:
-            item = self.string_replace(item, targetdir)
-            rulename = item.split(" ")[0]
-            filename = item.split(" ")[1]
+                    if matches:
+                        rulenames = [match.rule for match in matches]
+                        for rulename in rulenames:
+                            content.append([rulename, filename])
+                except IOError:
+                    continue             
+
+        for (rulename, filename) in content:
             num_row = self.tableWidget.rowCount()
             self.tableWidget.insertRow(num_row)
             self.tableWidget.setItem(num_row, 0, QtWidgets.QTableWidgetItem(rulename))
