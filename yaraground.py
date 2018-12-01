@@ -221,8 +221,11 @@ class Ui_yaraground(object):
         self.verticalLayout_2.addWidget(self.yararulePath)
         if len(self.configuration['lastRulePath']) > 0:
             self.yararulePath.setText(self.configuration['lastRulePath'])
-            self.fp = open(self.configuration['lastRulePath'], 'r')
-            self.content = self.fp.read()
+            try:
+                self.fp = open(self.configuration['lastRulePath'], 'r')
+                self.content = self.fp.read()
+            except FileNotFoundError:
+                pass
         else:
             pass
 
